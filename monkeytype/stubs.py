@@ -21,6 +21,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    TypeAliasType,
     Union,
 )
 
@@ -114,13 +115,19 @@ def get_imports_for_annotation(anno: Any) -> ImportMap:
         anno is inspect.Parameter.empty
         or anno is inspect.Signature.empty
         or not (
-            isinstance(anno, type) or is_any(anno) or is_union(anno) or is_generic(anno)
+            isinstance(anno, type)
+            or is_any(anno)
+            or is_union(anno)
+            or is_generic(anno)
+            or isinstance(anno, TypeAliasType)
         )
-        or anno.__module__ == "builtins"
+        or (anno.__module__ == "builtins" and not is_generic(anno) and not isinstance(anno, TypeAliasType))
     ):
         return imports
     if is_any(anno):
         imports["typing"].add("Any")
+    elif isinstance(anno, TypeAliasType):
+        imports[anno.__module__].add(anno.__name__)
     elif _is_optional(anno):
         imports["typing"].add("Optional")
         elem_type = _get_optional_elem(anno)

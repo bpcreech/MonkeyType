@@ -3,6 +3,7 @@
 #
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
+from types import GenericAlias
 from typing import Any, ForwardRef, Union, _GenericAlias  # type: ignore[attr-defined]
 
 from mypy_extensions import _TypedDictMeta  # type: ignore[attr-defined]
@@ -38,6 +39,7 @@ try:
             typ is Union
             or isinstance(typ, _GenericAlias)
             or isinstance(typ, _SpecialGenericAlias)
+            or isinstance(typ, GenericAlias)
         )
 
 except ImportError:

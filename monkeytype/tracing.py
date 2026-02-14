@@ -10,6 +10,7 @@ import random
 import sys
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
+from itertools import count
 from types import CodeType, FrameType
 from typing import Any, Callable, Dict, Iterator, Optional, Union, cast
 
@@ -120,7 +121,9 @@ def get_func_in_mro(obj: Any, code: CodeType) -> Optional[Callable[..., Any]]:
 def _has_code(
     func: Optional[Callable[..., Any]], code: CodeType
 ) -> Optional[Callable[..., Any]]:
-    while func is not None:
+    # Limit this loop so we don't go chasing pathological cases like MagicMock:
+    c = count()
+    while func is not None and next(c) < 10:
         func_code = getattr(func, "__code__", None)
         if func_code is code:
             return func
