@@ -121,7 +121,11 @@ def get_imports_for_annotation(anno: Any) -> ImportMap:
             or is_generic(anno)
             or isinstance(anno, TypeAliasType)
         )
-        or (anno.__module__ == "builtins" and not is_generic(anno) and not isinstance(anno, TypeAliasType))
+        or (
+            anno.__module__ == "builtins"
+            and not is_generic(anno)
+            and not isinstance(anno, TypeAliasType)
+        )
     ):
         return imports
     if is_any(anno):
@@ -136,7 +140,7 @@ def get_imports_for_annotation(anno: Any) -> ImportMap:
     elif is_generic(anno):
         if is_union(anno):
             imports["typing"].add("Union")
-        else:
+        elif anno.__module__ != "builtins":
             imports[anno.__module__].add(
                 _get_import_for_qualname(qualname_of_generic(anno))
             )
