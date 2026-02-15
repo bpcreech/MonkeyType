@@ -180,7 +180,10 @@ class RemoveImportsTransformer(CSTTransformer):
             module_name = name.evaluated_name
             found = False
             for import_item in self.import_items_to_be_removed:
-                if import_item.module_name == module_name:
+                if (
+                    import_item.module_name == module_name
+                    and import_item.obj_name is None
+                ):
                     found = True
                     break
             if not found:
